@@ -40,3 +40,15 @@ build-deps: clone-deps
 	(cd ../../../detectron2  && python setup.py clean && python setup.py develop)
 	(cd ../../../torchbenchmark && python install.py --continue_on_fail)
 	pip uninstall -y torchrec-nightly fbgemm-gpu-nightly
+
+build-deps-macos: clone-deps
+	conda install -y astunparse numpy scipy ninja pyyaml setuptools cmake \
+		typing-extensions requests protobuf numba cython scikit-learn
+	conda install -y -c conda-forge librosa
+	(cd ../../../torchvision && python setup.py clean && python setup.py develop)
+	(cd ../../../torchdata && python setup.py install)
+	(cd ../../../torchtext && python setup.py clean && python setup.py develop)
+	(cd ../../../torchaudio && python setup.py clean && python setup.py develop)
+	(cd ../../../torchrec && python setup.py clean && python setup.py develop)
+	(cd ../../../detectron2  && python setup.py clean && python setup.py develop)
+	(cd ../../../torchbenchmark && python install.py --continue_on_fail)
