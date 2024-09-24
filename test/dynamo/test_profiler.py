@@ -163,20 +163,36 @@ class DynamoProfilerTests(torch._dynamo.test_case.TestCase):
         )
 
     def test_profiler_dynamo_compiled_region(self):
-        def fn(x, y, z):
-            return x @ y + z
-
-        opt_fn = torch._dynamo.optimize("eager")(fn)
-
-        inputs = [torch.rand(4, 4) for _ in range(3)]
-
-        for _ in range(2):
-            opt_fn(*inputs)
+        def fn(x, y):
+            r = y.sum(dim=1)
+            print(r.shape)
+            return x * r
 
         with torch.profiler.profile() as prof:
-            opt_fn(*inputs)
+            fn_c = torch.compile(fn)
 
-        self.assertTrue(any(e.name == "Torch-Compiled Region" for e in prof.events()))
+            fn_c(
+                torch.randn(10),
+                torch.randn(10, 10),
+            )
+
+            fn_c(
+                torch.randn(10),
+                torch.randn(10, 15),
+            )
+
+        self.assertTrue(
+            any(e.name == "Torch-Compiled Region: 0/0_1" for e in prof.events())
+        )
+        self.assertTrue(
+            any(e.name == "Torch-Compiled Region: 1/0" for e in prof.events())
+        )
+        self.assertTrue(
+            any(e.name == "Torch-Compiled Region: 1/1" for e in prof.events())
+        )
+        self.assertTrue(
+            any(e.name == "Torch-Compiled Region: 0/1_1" for e in prof.events())
+        )
 
 
 if __name__ == "__main__":

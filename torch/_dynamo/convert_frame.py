@@ -807,7 +807,12 @@ def _compile(
             hooks.guard_fail_fn if hooks else None,
         )
 
-        guarded_code = GuardedCode(out_code, check_fn.check_fn, compile_id)
+        trace_id = CompileContext.get().current_trace_id()
+        trace_id_str = str(trace_id) if trace_id is not None else "Unknown"
+        annotation_str = "Torch-Compiled Region: " + trace_id_str
+        guarded_code = GuardedCode(
+            out_code, check_fn.check_fn, compile_id, annotation_str
+        )
 
         if not output.is_empty_graph() and hooks.guard_export_fn is not None:
             # We should not run the guard_export_fn when Dynamo does not
