@@ -387,6 +387,13 @@ case "$image" in
     CONDA_CMAKE=yes
     TRITON_CPU=yes
     ;;
+  pytorch-linux-jammy-py3.12-triton-cpu)
+    CUDA_VERSION=12.4
+    ANACONDA_PYTHON_VERSION=3.12
+    GCC_VERSION=11
+    CONDA_CMAKE=yes
+    TRITON_CPU=yes
+    ;;
   pytorch-linux-focal-linter)
     # TODO: Use 3.9 here because of this issue https://github.com/python/mypy/issues/13627.
     # We will need to update mypy version eventually, but that's for another day. The task
